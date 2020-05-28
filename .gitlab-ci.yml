@@ -1,53 +1,6 @@
-include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
-
-variables:
-    BUNDLE: "kgx.flatpak"
-    GIT_SUBMODULE_STRATEGY: normal
-
-flatpak:
-    image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:master'
-    variables:
-        MANIFEST_PATH: "org.gnome.zbrown.KingsCross.json"
-        FLATPAK_MODULE: "kgx"
-        MESON_ARGS: "-Dgtop=false"
-        RUNTIME_REPO: "https://sdk.gnome.org/gnome-nightly.flatpakrepo"
-        APP_ID: "org.gnome.zbrown.KingsCross"
-    extends: .flatpak
-
-review:
-    stage: deploy
-    dependencies:
-        - 'flatpak'
-    extends: '.review'
-
-stop_review:
-    stage: deploy
-    extends: '.stop_review'
-
-pages:
-  image: fedora:latest
-  stage: deploy 
-  before_script:
-    - dnf update -y --nogpgcheck
-    - dnf install -y --nogpgcheck meson gettext glib2-devel gcc gcc-c++ git
-      desktop-file-utils gtk3-devel libgtop2-devel vte291-devel gtk-doc
-      gobject-introspection-devel gperf vala
-  script:
-    - meson -Dgtk_doc=true _docs_build .
-    - ninja -C _docs_build
-    - ninja -C _docs_build kgx-doc
-
-    - mkdir -p public/
-    - mv _docs_build/doc/html/ public/kgx/
-  artifacts:
-    paths:
-      - public
-  only:
-    - master
-
 debian:
   image: debian:buster
-  stage: test
+  stage: build
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt -y update
@@ -64,3 +17,33 @@ debian:
   artifacts:
     paths:
       - "*.deb"
+
+fedora:
+  image: fedora:latest
+  stage: build
+  before_script:
+    - dnf update -y --nogpgcheck
+    - dnf install -y --nogpgcheck meson gettext glib2-devel gcc gcc-c++ git
+      desktop-file-utils gtk3-devel libgtop2-devel vte291-devel gtk-doc
+      gobject-introspection-devel gperf vala
+  script:
+    - meson --buildtype=release -Dgtk_doc=true _build .
+    - ninja -C _build
+    - ninja -C _build kgx-doc
+    - mkdir -p _reference/kgx
+    - mv _build/doc/html/ _reference/kgx
+  artifacts:
+    paths:
+    - _reference
+
+pages:
+  stage: deploy
+  dependencies:
+  - fedora
+  script:
+  - mv _reference public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
