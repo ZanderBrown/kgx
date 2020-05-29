@@ -24,11 +24,6 @@ conf.set_quoted('GETTEXT_PACKAGE', 'kgx')
 conf.set_quoted('LOCALEDIR', prefix / get_option('localedir'))
 conf.set_quoted('RES_PATH', '/org/gnome/zbrown/KingsCross/')
 conf.set('BINDIR', prefix / get_option('bindir'))
-if get_option('gtop')
-  conf.set('HAS_GTOP', 1)
-else
-  conf.set('HAS_GTOP', 0)
-endif
 if get_option('generic')
   conf.set('IS_GENERIC', 1)
 else

@@ -29,11 +29,6 @@ typedef struct _KgxProcess KgxProcess;
 
 #define KGX_TYPE_PROCESS (kgx_process_get_type ())
 
-/* The type itself is always defined but we hide the symbols
- * when libgtop isn't used to highlight other places where things
- * need to be #if HAS_GTOP
- */
-#if HAS_GTOP
 GTree      *kgx_process_get_list    (void);
 KgxProcess *kgx_process_new         (GPid        pid);
 GPid        kgx_process_get_pid     (KgxProcess *self);
@@ -41,7 +36,6 @@ gint32      kgx_process_get_uid     (KgxProcess *self);
 gboolean    kgx_process_get_is_root (KgxProcess *self);
 GPid        kgx_process_get_parent  (KgxProcess *self);
 const char *kgx_process_get_exec    (KgxProcess *self);
-#endif
 GType       kgx_process_get_type    (void);
 void        kgx_process_unref       (KgxProcess *self);
 

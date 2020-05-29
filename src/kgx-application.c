@@ -165,7 +165,7 @@ kgx_application_activate (GApplication *app)
   gtk_window_present_with_time (window, timestamp);
 }
 
-#if HAS_GTOP
+
 static gboolean
 handle_watch_iter (gpointer pid,
                    gpointer val,
@@ -250,14 +250,12 @@ watch (gpointer data)
 
   return G_SOURCE_CONTINUE;
 }
-#endif
 
 static inline void
 set_watcher (KgxApplication *self, gboolean focused)
 {
   g_debug ("updated watcher focused? %s", focused ? "yes" : "no");
 
-  #if HAS_GTOP
   if (self->timeout != 0) {
     g_source_remove (self->timeout);
   }
@@ -267,7 +265,6 @@ set_watcher (KgxApplication *self, gboolean focused)
   // Translators: This is the name of the timeout that looks for programs
   // running in the terminal
   g_source_set_name_by_id (self->timeout, _("child watcher"));
-  #endif
 }
 
 static void
@@ -668,7 +665,7 @@ kgx_application_init (KgxApplication *self)
   self->timeout = 0;
 }
 
-#if HAS_GTOP
+
 /**
  * kgx_application_add_watch:
  * @self: the #KgxApplication
@@ -720,7 +717,7 @@ kgx_application_remove_watch (KgxApplication *self,
     g_warning ("Unknown process %i", pid);
   }
 }
-#endif
+
 
 /**
  * kgx_application_get_font:

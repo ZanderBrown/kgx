@@ -1,9 +1,4 @@
 
-option('gtop',
-       type: 'boolean',
-       value: true,
-       description: 'Use libgtop to track children, you probably DO want this')
-
 option('gtk_doc',
        type: 'boolean',
        value: false,

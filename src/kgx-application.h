@@ -90,13 +90,12 @@ struct _KgxApplication
 
 G_DECLARE_FINAL_TYPE (KgxApplication, kgx_application, KGX, APPLICATION, GtkApplication)
 
-#if HAS_GTOP
+
 void                  kgx_application_add_watch       (KgxApplication *self,
                                                        GPid            pid,
                                                        KgxPage        *page);
 void                  kgx_application_remove_watch    (KgxApplication *self,
                                                        GPid            pid);
-#endif
 PangoFontDescription *kgx_application_get_font        (KgxApplication *self);
 void                  kgx_application_push_active     (KgxApplication *self);
 void                  kgx_application_pop_active      (KgxApplication *self);

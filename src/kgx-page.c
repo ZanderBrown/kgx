@@ -824,7 +824,7 @@ kgx_page_get_id (KgxPage *self)
   return priv->id;
 }
 
-#if HAS_GTOP
+
 static inline KgxStatus
 push_type (GHashTable      *table,
            GPid             pid,
@@ -840,7 +840,6 @@ push_type (GHashTable      *table,
 
   return status;
 }
-#endif
 
 
 /**
@@ -856,7 +855,6 @@ void
 kgx_page_push_child (KgxPage    *self,
                      KgxProcess *process)
 {
-  #if HAS_GTOP
   GtkStyleContext *context;
   GPid pid = 0;
   const char *exec = NULL;
@@ -885,7 +883,6 @@ kgx_page_push_child (KgxPage    *self,
     priv->status = new_status;
     g_object_notify_by_pspec (G_OBJECT (self), pspecs[PROP_PAGE_STATUS]);
   }
-  #endif
 }
 
 
@@ -936,9 +933,7 @@ kgx_page_pop_child (KgxPage    *self,
   priv = kgx_page_get_instance_private (self);
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
-  #if HAS_GTOP
   pid = kgx_process_get_pid (process);
-  #endif
   
   new_status |= pop_type (priv->remote, pid, context, KGX_REMOTE);
   new_status |= pop_type (priv->root, pid, context, KGX_PRIVILEGED);
@@ -953,9 +948,8 @@ kgx_page_pop_child (KgxPage    *self,
     g_autoptr (GNotification) noti = NULL;
 
     noti = g_notification_new (_("Command completed"));
-    #if HAS_GTOP
     g_notification_set_body (noti, kgx_process_get_exec (process));
-    #endif
+
     g_notification_set_default_action_and_target (noti,
                                                   "app.focus-page",
                                                   "u",

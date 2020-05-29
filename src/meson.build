@@ -19,6 +19,7 @@ kgx_sources = [
   'kgx-close-dialog-row.h',
   'kgx-window.c',
   'kgx-window.h',
+  'kgx-process.c',
   'kgx-process.h',
 ]
 
@@ -26,6 +27,7 @@ kgx_deps = [
   dependency('gio-2.0', version: '>= 2.58'),
   dependency('gtk+-3.0', version: '>= 3.24'),
   dependency('libhandy-0.0', version: '>= 0.0.11', fallback: ['handy', 'libhandy_dep']),
+  dependency('libgtop-2.0'),
   cc.find_library('m', required: false),
 ]
 
@@ -39,13 +41,6 @@ if not ideal_vte.found()
   kgx_deps += [dependency('vte-2.91', version: '>= 0.54.2')]
 else
   kgx_deps += [ideal_vte]
-endif
-
-if get_option('gtop')
-  kgx_deps += dependency('libgtop-2.0')
-  kgx_sources += 'kgx-process.c'
-else
-  kgx_sources += 'kgx-process-dummy.c'
 endif
 
 kgx_sources += config_h

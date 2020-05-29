@@ -78,9 +78,7 @@ started (GObject      *src,
 {
   g_autoptr (GError) error = NULL;
   KgxPage *page = KGX_PAGE (src);
-  #if HAS_GTOP
   GtkApplication *app = NULL;
-  #endif
   GPid pid;
 
   pid = kgx_page_start_finish (page, res, &error);
@@ -91,11 +89,9 @@ started (GObject      *src,
                 error->message);
   }
 
-  #if HAS_GTOP
   app = gtk_window_get_application (GTK_WINDOW (win));
 
   kgx_application_add_watch (KGX_APPLICATION (app), pid, page);
-  #endif
 }
 
 
@@ -274,7 +270,7 @@ kgx_window_finalize (GObject *object)
   G_OBJECT_CLASS (kgx_window_parent_class)->finalize (object);
 }
 
-#if HAS_GTOP
+
 static void
 delete_response (GtkWidget *dlg,
                  int        response,
@@ -321,14 +317,6 @@ kgx_window_delete_event (GtkWidget   *widget,
   
   return TRUE; // Block the close
 }
-#else
-static gboolean
-kgx_window_delete_event (GtkWidget   *widget,
-                         GdkEventAny *event)
-{
-  return FALSE; // Aka no, I don't want to block closing
-}
-#endif
 
 
 static void
