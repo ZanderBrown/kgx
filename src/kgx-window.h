@@ -96,6 +96,8 @@ struct _KgxWindow
   GtkWidget            *zoom_level;
   GtkWidget            *about_item;
   GtkWidget            *tab_bar;
+  GtkWidget            *tab_button;
+  GtkWidget            *tab_switcher;
   GtkWidget            *pages;
 
   int                   current_width;

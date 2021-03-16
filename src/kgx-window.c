@@ -329,6 +329,19 @@ extra_drag_data_received (HdyTabBar        *bar,
 }
 
 
+static void new_tab_activated (GSimpleAction *action,
+                               GVariant      *parameter,
+                               gpointer       data);
+
+
+static void
+new_tab_cb (HdyTabSwitcher *switcher,
+            KgxWindow      *self)
+{
+  new_tab_activated (NULL, NULL, self);
+}
+
+
 static gboolean
 kgx_window_window_state_event (GtkWidget           *widget,
                                GdkEventWindowState *event)
@@ -410,6 +423,8 @@ kgx_window_class_init (KgxWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, zoom_level);
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, about_item);
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, tab_bar);
+  gtk_widget_class_bind_template_child (widget_class, KgxWindow, tab_button);
+  gtk_widget_class_bind_template_child (widget_class, KgxWindow, tab_switcher);
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, pages);
 
   gtk_widget_class_bind_template_callback (widget_class, active_changed);
@@ -418,6 +433,7 @@ kgx_window_class_init (KgxWindowClass *klass)
   gtk_widget_class_bind_template_callback (widget_class, zoom);
   gtk_widget_class_bind_template_callback (widget_class, status_changed);
   gtk_widget_class_bind_template_callback (widget_class, extra_drag_data_received);
+  gtk_widget_class_bind_template_callback (widget_class, new_tab_cb);
 }
 
 
@@ -524,11 +540,23 @@ about_activated (GSimpleAction *action,
 }
 
 
+static void
+tab_switcher_activated (GSimpleAction *action,
+                        GVariant      *parameter,
+                        gpointer       data)
+{
+  KgxWindow *self = data;
+
+  hdy_tab_switcher_open (HDY_TAB_SWITCHER (self->tab_switcher));
+}
+
+
 static GActionEntry win_entries[] = {
   { "new-window", new_activated, NULL, NULL, NULL },
   { "new-tab", new_tab_activated, NULL, NULL, NULL },
   { "close-tab", close_tab_activated, NULL, NULL, NULL },
   { "about", about_activated, NULL, NULL, NULL },
+  { "tab-switcher", tab_switcher_activated, NULL, NULL, NULL },
 };
 
 
@@ -644,6 +672,12 @@ kgx_window_init (KgxWindow *self)
 
   g_object_bind_property (self->pages, "tab-view",
                           self->tab_bar, "view",
+                          G_BINDING_SYNC_CREATE);
+  g_object_bind_property (self->pages, "tab-view",
+                          self->tab_button, "view",
+                          G_BINDING_SYNC_CREATE);
+  g_object_bind_property (self->pages, "tab-view",
+                          self->tab_switcher, "view",
                           G_BINDING_SYNC_CREATE);
 
   target_list = gtk_target_list_new (NULL, 0);
