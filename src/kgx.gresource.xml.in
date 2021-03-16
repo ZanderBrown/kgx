@@ -9,6 +9,7 @@
     <file compressed="true">styles.css</file>
     <file compressed="true">logo.txt</file>
     <file preprocess="xml-stripblanks">icons/scalable/status/status-privileged-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/status/status-regular-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/status/status-remote-symbolic.svg</file>
   </gresource>
   <gresource prefix="/org/gnome/zbrown/KingsCross/gtk">

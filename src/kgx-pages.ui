@@ -7,6 +7,7 @@
       <object class="HdyTabView" id="view">
         <property name="visible">True</property>
         <property name="menu-model">tab-menu</property>
+        <property name="default-icon">view_default_icon</property>
         <signal name="notify::selected-page" handler="page_changed" swapped="no"/>
         <signal name="page-attached" handler="page_attached" swapped="no"/>
         <signal name="page-detached" handler="page_detached" swapped="no"/>
@@ -49,4 +50,7 @@
       </item>
     </section>
   </menu>
+  <object class="GThemedIcon" id="view_default_icon">
+    <property name="name">status-regular-symbolic</property>
+  </object>
 </interface>
