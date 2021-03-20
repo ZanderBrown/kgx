@@ -6,6 +6,7 @@ src/help-overlay.ui
 src/kgx-application.c
 src/kgx-close-dialog.c
 src/kgx-close-dialog.ui
+src/kgx-pages.ui
 src/kgx-simple-tab.c
 src/kgx-tab.c
 src/kgx-terminal.c
