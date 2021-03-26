@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="KgxSimpleTab" parent="KgxTab">
-    <property name="visible">1</property>
     <child type="content">
       <object class="GtkScrolledWindow">
-        <property name="visible">1</property>
         <property name="vexpand">1</property>
         <property name="propagate-natural-width">1</property>
         <property name="propagate-natural-height">1</property>
@@ -13,13 +11,13 @@
         <style>
           <class name="terminal"/>
         </style>
-        <child>
+        <property name="child">
           <object class="KgxTerminal" id="terminal">
-            <property name="visible">True</property>
+            <property name="vexpand">True</property>
             <property name="allow-hyperlink">True</property>
             <signal name="notify::path" handler="path_changed" swapped="no"/>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </template>

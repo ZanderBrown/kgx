@@ -305,7 +305,7 @@ kgx_application_startup (GApplication *app)
 
   G_APPLICATION_CLASS (kgx_application_parent_class)->startup (app);
 
-  hdy_init ();
+  adw_init ();
 
   gtk_settings = gtk_settings_get_default ();
 
@@ -337,12 +337,12 @@ kgx_application_startup (GApplication *app)
 
   provider = gtk_css_provider_new ();
   gtk_css_provider_load_from_resource (provider, RES_PATH "styles.css");
-  gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-                                             GTK_STYLE_PROVIDER (provider),
-                                             /* Is this stupid? Yes
-                                              * Does it fix vte using the wrong
-                                              * priority for fallback styles? Yes*/
-                                             GTK_STYLE_PROVIDER_PRIORITY_APPLICATION + 1);
+  gtk_style_context_add_provider_for_display (gdk_display_get_default (),
+                                              GTK_STYLE_PROVIDER (provider),
+                                              /* Is this stupid? Yes
+                                               * Does it fix vte using the wrong
+                                               * priority for fallback styles? Yes*/
+                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION + 1);
 
   set_watcher (KGX_APPLICATION (app), TRUE);
 }
@@ -736,16 +736,16 @@ focus_activated (GSimpleAction *action,
                  gpointer       data)
 {
   KgxApplication *self = KGX_APPLICATION (data);
-  GtkWidget *window;
+  GtkRoot *root;
   KgxPages *pages;
   KgxTab *page;
 
   page = kgx_application_lookup_page (self, g_variant_get_uint32 (parameter));
   pages = kgx_tab_get_pages (page);
   kgx_pages_focus_page (pages, page);
-  window = gtk_widget_get_toplevel (GTK_WIDGET (pages));
+  root = gtk_widget_get_root (GTK_WIDGET (pages));
 
-  gtk_window_present_with_time (GTK_WINDOW (window), GDK_CURRENT_TIME);
+  gtk_window_present_with_time (GTK_WINDOW (root), GDK_CURRENT_TIME);
 }
 
 

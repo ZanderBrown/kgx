@@ -19,6 +19,7 @@
 #pragma once
 
 #include <gtk/gtk.h>
+#include <adwaita.h>
 
 #include "kgx-tab.h"
 
@@ -34,13 +35,13 @@ G_BEGIN_DECLS
 struct _KgxPagesClass
 {
   /*< private >*/
-  GtkBinClass parent;
+  AdwBinClass parent;
 
   /*< public >*/
 };
 
 
-G_DECLARE_DERIVABLE_TYPE (KgxPages, kgx_pages, KGX, PAGES, GtkBin)
+G_DECLARE_DERIVABLE_TYPE (KgxPages, kgx_pages, KGX, PAGES, AdwBin)
 
 
 void        kgx_pages_add_page       (KgxPages   *self,
@@ -53,8 +54,8 @@ void        kgx_pages_focus_page     (KgxPages   *self,
 KgxStatus   kgx_pages_current_status (KgxPages   *self);
 void        kgx_pages_set_shortcut_widget (KgxPages  *self,
                                            GtkWidget *widget);
-gboolean    kgx_pages_key_press_event     (KgxPages  *self,
-                                           GdkEvent  *event);
+//gboolean    kgx_pages_key_press_event     (KgxPages  *self,
+//                                           GdkEvent  *event);
 void        kgx_pages_close_page          (KgxPages  *self);
 void        kgx_pages_detach_page         (KgxPages  *self);
 

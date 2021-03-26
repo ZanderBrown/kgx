@@ -19,7 +19,7 @@
 #pragma once
 
 #include <gtk/gtk.h>
-#include "handy.h"
+#include <adwaita.h>
 
 #include "kgx-terminal.h"
 #include "kgx-process.h"
@@ -63,7 +63,7 @@ typedef enum /*< enum,prefix=KGX >*/
  * @last_rows: the row count last time we received #GtkWidget::size-allocate
  * @timeout: the id of the #GSource used to hide the statusbar
  * @close_anyway: ignore running children and close without prompt
- * @header_bar: the #HdyHeaderBar that the styles are applied to
+ * @header_bar: the #GtkHeaderBar that the styles are applied to
  * @search_entry: the #GtkSearchEntry inside @search_bar
  * @search_bar: the windows #GtkSearchBar
  * @exit_info: the #GtkRevealer hat wraps @exit_message
@@ -77,7 +77,7 @@ typedef enum /*< enum,prefix=KGX >*/
 struct _KgxWindow
 {
   /*< private >*/
-  HdyApplicationWindow  parent_instance;
+  AdwApplicationWindow  parent_instance;
 
   /*< public >*/
   KgxTheme              theme;
@@ -90,13 +90,13 @@ struct _KgxWindow
   gboolean              close_anyway;
 
   /* Template widgets */
-  GtkWidget            *header_bar;
+  GtkWidget            *window_title;
   GtkWidget            *exit_info;
   GtkWidget            *exit_message;
   GtkWidget            *zoom_level;
-  GtkWidget            *about_item;
   GtkWidget            *tab_bar;
   GtkWidget            *pages;
+  GMenu                *primary_menu;
 
   int                   current_width;
   int                   current_height;
@@ -105,7 +105,7 @@ struct _KgxWindow
   GActionMap           *tab_actions;
 };
 
-G_DECLARE_FINAL_TYPE (KgxWindow, kgx_window, KGX, WINDOW, HdyApplicationWindow)
+G_DECLARE_FINAL_TYPE (KgxWindow, kgx_window, KGX, WINDOW, AdwApplicationWindow)
 
 GFile      *kgx_window_get_working_dir (KgxWindow    *self);
 void        kgx_window_show_status     (KgxWindow    *self,

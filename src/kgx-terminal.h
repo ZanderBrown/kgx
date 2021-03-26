@@ -74,13 +74,11 @@ struct _KgxTerminal {
   KgxTheme    theme;
   gboolean    opaque;
   GActionMap *actions;
+  GtkWidget  *popup_menu;
 
   /* Hyperlinks */
   char       *current_url;
   int         match_id[KGX_TERMINAL_N_LINK_REGEX];
-
-  /* Gestures */
-  GtkGesture *long_press_gesture;
 };
 
 G_DECLARE_FINAL_TYPE (KgxTerminal, kgx_terminal, KGX, TERMINAL, VteTerminal)

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkMessageDialog" id="dialog">
     <property name="modal">True</property>
     <child internal-child="message_area">
       <object class="GtkBox">
         <child>
           <object class="GtkListBox" id="list">
-            <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="selection-mode">none</property>
             <property name="width-request">300</property>
@@ -22,15 +21,12 @@
     <child type="action">
       <object class="GtkButton" id="button-cancel">
         <property name="label" translatable="yes">_Cancel</property>
-        <property name="visible">True</property>
-        <property name="can-default">True</property>
         <property name="use-underline">True</property>
       </object>
     </child>
     <child type="action">
       <object class="GtkButton" id="button-ok">
         <property name="label" translatable="yes">C_lose</property>
-        <property name="visible">True</property>
         <property name="use-underline">True</property>
         <style>
           <class name="destructive-action"/>

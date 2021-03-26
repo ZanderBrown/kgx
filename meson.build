@@ -5,6 +5,7 @@ project('kgx', 'c', version: '0.2.1',
     'buildtype=debugoptimized',
     'c_std=gnu11',
     'cpp_std=gnu++17',
+    'vte:gtk4=true',
   ],
 )
 
@@ -35,7 +36,7 @@ config_h_in = configure_file(
 )
 config_h = vcs_tag(input: config_h_in, output: 'kgx-config.h')
 
-gtk_ver = 'GDK_VERSION_3_24'
+gtk_ver = 'GDK_VERSION_4_0'
 glib_ver = 'GLIB_VERSION_2_62'
 add_project_arguments([
   '-I' + meson.build_root(),
@@ -92,11 +93,11 @@ gi_runner = configure_file(
 subdir('data')
 subdir('src')
 
-nautilus_dep = dependency('libnautilus-extension', required: get_option('nautilus'))
-if nautilus_dep.found()
-  gio_unix = dependency('gio-unix-2.0')
-  subdir('nautilus')
-endif
+#nautilus_dep = dependency('libnautilus-extension', required: get_option('nautilus'))
+#if nautilus_dep.found()
+#  gio_unix = dependency('gio-unix-2.0')
+#  subdir('nautilus')
+#endif
 
 subdir('po')
 subdir('doc')

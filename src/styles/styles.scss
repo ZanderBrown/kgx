@@ -19,9 +19,7 @@
 
     @each $side in $sides {
       &.#{$side} {
-        @include overshoot($side, normal, #cccccc);
-
-        &:backdrop { @include overshoot($side, backdrop, #cccccc); }
+        @include overshoot(#{$side}, normal, #cccccc);
       }
     }
   }
@@ -91,7 +89,6 @@ label.numeric {
 box.tab:drop(active) {
   outline: 1px solid $drop_target_color;
   outline-offset: -1px;
-  -gtk-outline-radius: 0;
 
   window:not(.tiled)
         :not(.tiled-top)
@@ -99,8 +96,8 @@ box.tab:drop(active) {
         :not(.tiled-left)
         :not(.tiled-right)
         :not(.maximized) & {
-    -gtk-outline-bottom-left-radius: 8px;
-    -gtk-outline-bottom-right-radius: 8px;
+//    outline-bottom-left-radius: 8px; TODO this should be on the box itself
+//    outline-bottom-right-radius: 8px;
   }
 }
 

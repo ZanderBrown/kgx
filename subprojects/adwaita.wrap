@@ -1,0 +1,4 @@
+[wrap-git]
+directory=adwaita
+url=https://gitlab.gnome.org/exalm/libadwaita.git
+revision=origin/master

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="KgxPages" parent="GtkBin">
-    <property name="visible">True</property>
-    <child>
+  <requires lib="gtk" version="4.0"/>
+  <template class="KgxPages" parent="AdwBin">
+    <property name="child">
       <object class="GtkOverlay">
-        <property name="visible">True</property>
         <child>
-          <object class="HdyTabView" id="view">
-            <property name="visible">True</property>
+          <object class="AdwTabView" id="view">
             <property name="menu-model">tab-menu</property>
             <signal name="notify::selected-page" handler="page_changed" swapped="no"/>
             <signal name="page-attached" handler="page_attached" swapped="no"/>
@@ -20,25 +17,23 @@
         </child>
         <child type="overlay">
           <object class="GtkRevealer" id="status_revealer">
-            <property name="visible">False</property>
             <property name="halign">end</property>
             <property name="valign">end</property>
             <property name="transition-type">crossfade</property>
             <signal name="notify::child-revealed" handler="check_revealer" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkLabel" id="status">
-                <property name="visible">True</property>
                 <property name="label">WxH</property>
                 <style>
                   <class name="floating-bar"/>
                   <class name="numeric"/>
                 </style>
               </object>
-            </child>
+            </property>
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </template>
   <menu id="tab-menu">
     <section>

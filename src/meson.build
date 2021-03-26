@@ -23,9 +23,9 @@ kgx_sources = [
 
 kgx_deps = [
   dependency('gio-2.0', version: '>= 2.62'),
-  dependency('gtk+-3.0', version: '>= 3.24'),
-  dependency('libhandy-1', version: '>= 1.1', fallback: ['handy', 'libhandy_dep']),
-  dependency('vte-2.91', version: '>= 0.65', fallback: ['vte', 'libvte_gtk3_dep']),
+  dependency('gtk4'),
+  dependency('libadwaita-1', fallback: ['adwaita', 'libadwaita_dep']),
+  dependency('vte-2.91', version: '>= 0.65', fallback: ['vte', 'libvte_gtk4_dep']),
   dependency('libgtop-2.0'),
   cc.find_library('m', required: false),
 ]
@@ -83,8 +83,8 @@ if get_option('gir')
         'GObject-2.0',
         'Gio-2.0',
         'Atk-1.0',
-        'Gdk-3.0',
-        'Gtk-3.0',
+        'Gdk-4.0',
+        'Gtk-4.0',
         'Pango-1.0',
         'Vte-2.91',
       ],
