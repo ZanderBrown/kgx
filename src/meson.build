@@ -70,51 +70,6 @@ kgx_dep = declare_dependency (sources: [config_h],
                               link_with: kgx_lib,
                               dependencies: kgx_deps)
 
-if get_option('gir')
-  kgx_gir = gnome.generate_gir(
-      kgx_lib,
-      sources: kgx_sources,
-      header: 'kgx.h',
-      nsversion: '1.0',
-      namespace: 'Kgx',
-      symbol_prefix: 'kgx',
-      identifier_prefix: 'Kgx',
-      includes: [
-        'GObject-2.0',
-        'Gio-2.0',
-        'Atk-1.0',
-        'Gdk-3.0',
-        'Gtk-3.0',
-        'Pango-1.0',
-        'Vte-2.91',
-      ],
-      dependencies: [kgx_dep],
-      install: false,
-      install_dir_gir: pkggirdir,
-      install_dir_typelib: pkgtypelibdir,
-      build_by_default: true,
-      # This is bad but we aren't generating a public GIR
-      extra_args: '--accept-unprefixed',
-  )
-  if get_option('vapi')
-    kgx_vala_dep = gnome.generate_vapi('Kgx-1.0',
-                                       sources: kgx_gir[0],
-                                       packages: [
-                                          'gio-2.0',
-                                          'atk',
-                                          'gtk+-3.0',
-                                          'pango',
-                                          'vte-2.91',
-                                       ],
-                                       install: false,
-    )
-  endif
-else
-  if get_option('vapi')
-    error('Can\'t generate VAPI without GIR')
-  endif
-endif
-
 executable('kgx', 'main.c',
   dependencies: kgx_dep,
   install: true,

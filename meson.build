@@ -15,8 +15,6 @@ libdir = prefix / get_option('libdir')
 datadir = prefix / get_option('datadir')
 pkglibdir = prefix / libdir / meson.project_name()
 pkgdatadir = datadir / meson.project_name()
-pkggirdir =  pkgdatadir / 'gir-1.0'
-pkgtypelibdir = pkglibdir / 'girepository-1.0'
 
 conf = configuration_data()
 conf.set_quoted('PACKAGE_VERSION', '@VCS_TAG@')
@@ -81,14 +79,6 @@ add_project_arguments(
   language: 'c'
 )
 
-gi_runner = configure_file(
-  input: 'gi.in',
-  output: 'gi',
-  configuration: {
-    'BUILD_DIR': join_paths(meson.current_build_dir(), 'src')
-  }
-)
-
 subdir('data')
 subdir('src')
 
@@ -100,11 +90,5 @@ endif
 
 subdir('po')
 subdir('doc')
-if get_option('tests')
-  if not get_option('gir')
-    error('Tests require GIR')
-  endif
-  subdir('tests')
-endif
 
 meson.add_install_script('build-aux/meson/postinstall.py')

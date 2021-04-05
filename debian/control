@@ -16,15 +16,11 @@ Build-Depends:
  libvte-2.91-dev (>= 0.54.2),
  libgtop2-dev,
  meson,
- valac,
 # Vte as subproject (not directly needed by KGX)
  libgnutls28-dev (>= 3.2.7),
  libsystemd-dev (>= 220) [linux-any],
  libxml2-utils,
 # Tests:
- gobject-introspection,
- libgirepository1.0-dev,
- python3-gi,
  at-spi2-core,
  xvfb,
  xauth,

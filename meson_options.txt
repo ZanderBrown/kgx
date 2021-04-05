@@ -4,16 +4,6 @@ option('gtk_doc',
        value: false,
        description: 'Whether to generate the API reference, you probably don\'t want this')
 
-option('gir',
-       type: 'boolean',
-       value: false,
-       description: 'Whether to generate GIR, you probably don\'t want this')
-
-option('vapi',
-       type: 'boolean',
-       value: false,
-       description: 'Whether to generate VAPI, you probably don\'t want this')
-
 option('generic',
        type: 'boolean',
        value: false,

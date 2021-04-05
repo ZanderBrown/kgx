@@ -8,12 +8,6 @@ else
 	MESON_OPTS += -Dgeneric=false
 endif
 
-ifeq ($(filter nocheck,$(DEB_BUILD_OPTIONS)),)
-	MESON_OPTS += -Dtests=true -Dgir=true
-else
-	MESON_OPTS += -Dtests=false -Dgir=false
-endif
-
 %:
 	dh $@ --builddirectory=_build
 

@@ -25,10 +25,9 @@ fedora:
   before_script:
     - dnf update -y --nogpgcheck
     - dnf install -y --nogpgcheck meson gettext glib2-devel gcc gcc-c++ git
-      desktop-file-utils gtk-doc gperf vala "pkgconfig(gtk+-3.0)"
+      desktop-file-utils gtk-doc gperf "pkgconfig(gtk+-3.0)"
       "pkgconfig(vte-2.91)" "pkgconfig(libgtop-2.0)" "pkgconfig(fribidi)"
-      "pkgconfig(gnutls)" "pkgconfig(gobject-introspection-1.0)"
-      "pkgconfig(libsystemd)" "pkgconfig(libpcre2-8)"
+      "pkgconfig(gnutls)" "pkgconfig(libsystemd)" "pkgconfig(libpcre2-8)"
   script:
     - meson --buildtype=release -Dgtk_doc=true _build .
     - ninja -C _build
