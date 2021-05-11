@@ -12,6 +12,7 @@ StartupNotify=true
 DBusActivatable=true
 X-GNOME-UsesNotifications=true
 Actions=new-window;new-tab;
+Implements=org.freedesktop.Terminal1
 
 [Desktop Action new-window]
 Exec=kgx

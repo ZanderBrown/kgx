@@ -370,6 +370,76 @@ kgx_application_open (GApplication  *app,
 }
 
 
+static void
+handle_launch (XdgTerminal1          *xdg_term,
+               GDBusMethodInvocation *invocation,
+               const char            *exec,
+               const char            *working_directory,
+               const char            *desktop_entry,
+               const char *const     *env,
+               GVariant              *options,
+               GVariant              *platform_data,
+               KgxApplication        *self)
+{
+  /* TODO: entry - new instance? title? */
+  /* TODO: env */
+  /* TODO: options - keep open? */
+
+  kgx_application_add_terminal (self,
+                                NULL,
+                                -1,
+                                g_file_new_for_path (working_directory),
+                                exec,
+                                NULL);
+
+  xdg_terminal1_complete_launch_command (xdg_term, invocation);
+}
+
+
+static gboolean
+kgx_application_dbus_register (GApplication     *app,
+                               GDBusConnection  *connection,
+                               const char       *object_path,
+                               GError          **error)
+{
+  KgxApplication *self = KGX_APPLICATION (app);
+
+  self->xdg_term = xdg_terminal1_skeleton_new ();
+
+  g_signal_connect (self->xdg_term,
+                    "handle-launch-command", G_CALLBACK (handle_launch),
+                    self);
+
+  if (!g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (self->xdg_term),
+                                         connection,
+                                         object_path,
+                                         error)) {
+    return FALSE;
+  }
+
+  return G_APPLICATION_CLASS (kgx_application_parent_class)->dbus_register (app,
+                                                                            connection,
+                                                                            object_path,
+                                                                            error);
+}
+
+
+static void
+kgx_application_dbus_unregister (GApplication    *app,
+                                 GDBusConnection *connection,
+                                 const char      *object_path)
+{
+  KgxApplication *self = KGX_APPLICATION (app);
+
+  g_dbus_interface_skeleton_unexport (G_DBUS_INTERFACE_SKELETON (self->xdg_term));
+  g_clear_object (&self->xdg_term);
+
+  return G_APPLICATION_CLASS (kgx_application_parent_class)->dbus_unregister (app,
+                                                                              connection,
+                                                                              object_path);
+}
+
+
 static int
 kgx_application_command_line (GApplication            *app,
                               GApplicationCommandLine *cli)
@@ -540,6 +610,8 @@ kgx_application_class_init (KgxApplicationClass *klass)
   app_class->activate = kgx_application_activate;
   app_class->startup = kgx_application_startup;
   app_class->open = kgx_application_open;
+  app_class->dbus_register = kgx_application_dbus_register;
+  app_class->dbus_unregister = kgx_application_dbus_unregister;
   app_class->command_line = kgx_application_command_line;
   app_class->handle_local_options = kgx_application_handle_local_options;
 

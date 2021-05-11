@@ -20,6 +20,8 @@
 
 #include <gtk/gtk.h>
 
+#include "xdg-term1.h"
+
 #include "kgx-process.h"
 #include "kgx-window.h"
 #include "kgx-terminal.h"
@@ -68,8 +70,7 @@ struct ProcessWatch {
  *
  * Stability: Private
  */
-struct _KgxApplication
-{
+struct _KgxApplication {
   /*< private >*/
   GtkApplication            parent_instance;
 
@@ -77,6 +78,8 @@ struct _KgxApplication
   KgxTheme                  theme;
   double                    scale;
   gint64                    scrollback_lines;
+
+  XdgTerminal1             *xdg_term;
 
   GSettings                *settings;
   GSettings                *desktop_interface;
