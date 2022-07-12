@@ -31,30 +31,54 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="42.beta" date="2022-02-14">
+    <release version="42.0" date="2022-07-13">
       <description>
-        <p>KGX now goes by Console and we have restored the legendary ‘Day’ mode</p>
-        <p>Also in this release:</p>
+        <p>Improvements:</p>
         <ul>
-          <li>👓 Much better High Contrast support</li>
-          <li>🔬 Increased Zoom range</li>
-          <li>📋 Paste is now less pernickety</li>
-          <li>🩹 Fixed a couple leaks and assorted issues</li>
+          <li>Renamed to Console</li>
+          <li>Better high contrast support</li
+          <li>Increased zoom range</li>
+          <li>Improved text paste</li>
         </ul>
-        <p>GNOME l10n Teams have updated translations:</p>
+        <p>Assorted bug fixes</p>
+        <p>Translation updates</p>
         <ul>
           <li>Basque</li>
+          <li>Brazilian Portuguese</li>
+          <li>Bulgarian</li>
+          <li>Catalan</li>
           <li>Chinese (China)</li>
+          <li>Croatian</li>
+          <li>Czech</li>
+          <li>Danish</li>
+          <li>Dutch</li>
           <li>Finnish</li>
+          <li>French</li>
+          <li>Friulian</li>
           <li>Galician</li>
+          <li>German</li>
           <li>Hebrew</li>
+          <li>Hungarian</li>
+          <li>Indonesian</li>
+          <li>Italian</li>
+          <li>Japanese</li>
+          <li>Kazakh</li>
+          <li>Korean</li>
+          <li>Lithuanian</li>
+          <li>Nepali</li>
+          <li>Norwegian Bokmål</li>
+          <li>Occitan</li>
+          <li>Persian</li>
           <li>Polish</li>
           <li>Portuguese</li>
-          <li>Portuguese (Brazil)</li>
+          <li>Punjabi</li>
           <li>Russian</li>
+          <li>Serbian</li>
+          <li>Slovak</li>
           <li>Slovenian</li>
           <li>Spanish</li>
           <li>Swedish</li>
+          <li>Vietnamese</li>
           <li>Turkish</li>
           <li>Ukrainian</li>
         </ul>

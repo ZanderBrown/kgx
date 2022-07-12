@@ -1,3 +1,35 @@
+Version 42.0
+~~~~~~~~~~~~
+
+- Drop unneeded custom RPATH
+- Translation updates:
+  - Bulgarian
+  - Catalan
+  - Croatian
+  - Czech
+  - Danish
+  - Dutch
+  - Finnish
+  - French
+  - Friulian
+  - German
+  - Hungarian
+  - Indonesian
+  - Italian
+  - Japanese
+  - Kazakh
+  - Korean
+  - Lithuanian
+  - Nepali
+  - Norwegian Bokmål
+  - Occitan
+  - Persian
+  - Punjabi
+  - Serbian
+  - Slovak
+  - Slovenian
+  - Vietnamese
+
 Version 42.beta
 ~~~~~~~~~~~~~~~
 Released: 2022-02-14
