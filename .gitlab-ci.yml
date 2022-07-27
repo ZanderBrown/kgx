@@ -28,7 +28,6 @@ fedora:
     - meson test -C _build
 
 flatpak:
-    image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:master'
     stage: build
     variables:
         MANIFEST_PATH: "build-aux/flatpak/org.gnome.Console.Devel.json"
