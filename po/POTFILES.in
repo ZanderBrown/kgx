@@ -16,4 +16,3 @@ src/kgx-window.c
 src/kgx-window.ui
 src/main.c
 src/menus.ui
-nautilus/kgx-nautilus-menu-item.c
