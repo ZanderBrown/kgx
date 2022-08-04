@@ -110,7 +110,6 @@ add_project_arguments(
 
 subdir('data')
 subdir('src')
-
 subdir('po')
 
 gnome.post_install(
