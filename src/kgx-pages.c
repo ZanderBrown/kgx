@@ -66,7 +66,6 @@ struct _KgxPagesPrivate {
   PangoFontDescription *font;
   double                zoom;
   KgxTheme              theme;
-  gboolean              opaque;
   gint64                scrollback_lines;
 
   AdwTabPage           *action_page;
@@ -83,7 +82,6 @@ enum {
   PROP_TITLE,
   PROP_PATH,
   PROP_THEME,
-  PROP_OPAQUE,
   PROP_FONT,
   PROP_ZOOM,
   PROP_IS_ACTIVE,
@@ -148,9 +146,6 @@ kgx_pages_get_property (GObject    *object,
     case PROP_THEME:
       g_value_set_enum (value, priv->theme);
       break;
-    case PROP_OPAQUE:
-      g_value_set_boolean (value, priv->opaque);
-      break;
     case PROP_FONT:
       g_value_set_boxed (value, priv->font);
       break;
@@ -196,9 +191,6 @@ kgx_pages_set_property (GObject      *object,
       break;
     case PROP_THEME:
       priv->theme = g_value_get_enum (value);
-      break;
-    case PROP_OPAQUE:
-      priv->opaque = g_value_get_boolean (value);
       break;
     case PROP_FONT:
       if (priv->font) {
@@ -619,20 +611,6 @@ kgx_pages_class_init (KgxPagesClass *klass)
                        KGX_THEME_NIGHT,
                        G_PARAM_READWRITE);
 
-  /**
-   * KgxPages:opaque:
-   *
-   * Whether to disable transparency
-   *
-   * Bound to #GtkWindow:is-maximized on the #KgxWindow
-   *
-   * Stability: Private
-   */
-  pspecs[PROP_OPAQUE] =
-    g_param_spec_boolean ("opaque", "Opaque", "Terminal opaqueness",
-                          FALSE,
-                          G_PARAM_READWRITE);
-
   pspecs[PROP_FONT] =
     g_param_spec_boxed ("font", "Font", "Monospace font",
                          PANGO_TYPE_FONT_DESCRIPTION,
@@ -713,7 +691,6 @@ kgx_pages_init (KgxPages *self)
   priv->font = NULL;
   priv->zoom = KGX_FONT_SCALE_DEFAULT;
   priv->theme = KGX_THEME_NIGHT;
-  priv->opaque = FALSE;
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

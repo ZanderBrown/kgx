@@ -69,7 +69,6 @@ G_DEFINE_TYPE (KgxTerminal, kgx_terminal, VTE_TYPE_TERMINAL)
 enum {
   PROP_0,
   PROP_THEME,
-  PROP_OPAQUE,
   PROP_PATH,
   LAST_PROP
 };
@@ -137,7 +136,7 @@ update_terminal_colors (KgxTerminal *self)
   switch (resolved_theme) {
     case KGX_THEME_HACKER:
       fg = (GdkRGBA) { 0.1, 1.0, 0.1, 1.0};
-      bg = (GdkRGBA) { 0.05, 0.05, 0.05, 0.96 };
+      bg = (GdkRGBA) { 0.05, 0.05, 0.05, 1.0 };
       break;
     case KGX_THEME_DAY:
       fg = (GdkRGBA) { 0.0, 0.0, 0.0, 0.0 };
@@ -147,12 +146,8 @@ update_terminal_colors (KgxTerminal *self)
     case KGX_THEME_AUTO:
     default:
       fg = (GdkRGBA) { 1.0, 1.0, 1.0, 1.0};
-      bg = (GdkRGBA) { 0.12, 0.12, 0.12, 0.96 };
+      bg = (GdkRGBA) { 0.12, 0.12, 0.12, 1.0 };
       break;
-  }
-
-  if (self->opaque) {
-    bg.alpha = 1.0;
   }
 
   vte_terminal_set_colors (VTE_TERMINAL (self), &fg, &bg, palette, 16);
@@ -161,24 +156,16 @@ update_terminal_colors (KgxTerminal *self)
 
 static void
 kgx_terminal_set_theme (KgxTerminal *self,
-                        KgxTheme     theme,
-                        gboolean     opaque)
+                        KgxTheme     theme)
 {
-  if (self->theme == theme && self->opaque == opaque) {
+  if (self->theme == theme) {
     return;
   }
 
-  if (self->theme != theme) {
-    self->theme = theme;
-    g_object_notify_by_pspec (G_OBJECT (self), pspecs[PROP_THEME]);
-  }
-
-  if (self->opaque != opaque) {
-    self->opaque = opaque;
-    g_object_notify_by_pspec (G_OBJECT (self), pspecs[PROP_OPAQUE]);
-  }
-
+  self->theme = theme;
   update_terminal_colors (self);
+
+  g_object_notify_by_pspec (G_OBJECT (self), pspecs[PROP_THEME]);
 }
 
 
@@ -192,10 +179,7 @@ kgx_terminal_set_property (GObject      *object,
 
   switch (property_id) {
     case PROP_THEME:
-      kgx_terminal_set_theme (self, g_value_get_enum (value), self->opaque);
-      break;
-    case PROP_OPAQUE:
-      kgx_terminal_set_theme (self, self->theme, g_value_get_boolean (value));
+      kgx_terminal_set_theme (self, g_value_get_enum (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -216,9 +200,6 @@ kgx_terminal_get_property (GObject    *object,
   switch (property_id) {
     case PROP_THEME:
       g_value_set_enum (value, self->theme);
-      break;
-    case PROP_OPAQUE:
-      g_value_set_boolean (value, self->opaque);
       break;
     case PROP_PATH:
       if ((uri = vte_terminal_get_current_file_uri (VTE_TERMINAL (self)))) {
@@ -519,20 +500,6 @@ kgx_terminal_class_init (KgxTerminalClass *klass)
     g_param_spec_enum ("theme", "Theme", "Terminal theme",
                        KGX_TYPE_THEME, KGX_THEME_NIGHT,
                        G_PARAM_READWRITE);
-
-  /**
-   * KgxTerminal:opaque:
-   *
-   * Whether to disable transparency
-   *
-   * Bound to #GtkWindow:is-maximized on the #KgxWindow
-   *
-   * Stability: Private
-   */
-  pspecs[PROP_OPAQUE] =
-    g_param_spec_boolean ("opaque", "Opaque", "Terminal opaqueness",
-                          FALSE,
-                          G_PARAM_READWRITE);
 
   /**
    * KgxTerminal:path:

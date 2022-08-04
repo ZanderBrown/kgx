@@ -224,28 +224,8 @@ active_changed (GObject *object, GParamSpec *pspec, gpointer data)
 
 
 static void
-state_or_size_changed (KgxWindow  *self)
+size_changed (KgxWindow  *self)
 {
-  GdkSurface *surface = gtk_native_get_surface (GTK_NATIVE (self));
-  GdkToplevelState state = gdk_toplevel_get_state (GDK_TOPLEVEL (surface));
-
-  self->is_maximized_or_tiled =
-    (state & (GDK_TOPLEVEL_STATE_FULLSCREEN |
-              GDK_TOPLEVEL_STATE_MAXIMIZED |
-              GDK_TOPLEVEL_STATE_TILED |
-              GDK_TOPLEVEL_STATE_TOP_TILED |
-              GDK_TOPLEVEL_STATE_RIGHT_TILED |
-              GDK_TOPLEVEL_STATE_BOTTOM_TILED |
-              GDK_TOPLEVEL_STATE_LEFT_TILED)) > 0;
-
-  g_object_set (self->pages, "opaque", self->is_maximized_or_tiled, NULL);
-
-  if (self->is_maximized_or_tiled) {
-    gtk_widget_add_css_class (GTK_WIDGET (self), "opaque");
-  } else {
-    gtk_widget_remove_css_class (GTK_WIDGET (self), "opaque");
-  }
-
   gtk_window_get_default_size (GTK_WINDOW (self),
                                &self->current_width,
                                &self->current_height);
@@ -322,44 +302,6 @@ new_tab_cb (KgxTabSwitcher *switcher,
 
 
 static void
-kgx_window_realize (GtkWidget *widget)
-{
-  KgxWindow *self = KGX_WINDOW (widget);
-  GdkSurface *surface;
-
-  GTK_WIDGET_CLASS (kgx_window_parent_class)->realize (widget);
-
-  surface = gtk_native_get_surface (GTK_NATIVE (self));
-
-  g_signal_connect_swapped (surface, "notify::state",
-                            G_CALLBACK (state_or_size_changed), self);
-  g_signal_connect_swapped (self, "notify::default-width",
-                            G_CALLBACK (state_or_size_changed), self);
-  g_signal_connect_swapped (self, "notify::default-height",
-                            G_CALLBACK (state_or_size_changed), self);
-
-  state_or_size_changed (self);
-}
-
-
-static void
-kgx_window_unrealize (GtkWidget *widget)
-{
-  KgxWindow *self = KGX_WINDOW (widget);
-  GdkSurface *surface = gtk_native_get_surface (GTK_NATIVE (self));
-
-  g_signal_handlers_disconnect_by_func (surface,
-                                        G_CALLBACK (state_or_size_changed),
-                                        self);
-  g_signal_handlers_disconnect_by_func (self,
-                                        G_CALLBACK (state_or_size_changed),
-                                        self);
-
-  GTK_WIDGET_CLASS (kgx_window_parent_class)->unrealize (widget);
-}
-
-
-static void
 kgx_window_class_init (KgxWindowClass *klass)
 {
   GObjectClass   *object_class = G_OBJECT_CLASS (klass);
@@ -370,9 +312,6 @@ kgx_window_class_init (KgxWindowClass *klass)
   object_class->dispose = kgx_window_dispose;
   object_class->set_property = kgx_window_set_property;
   object_class->get_property = kgx_window_get_property;
-
-  widget_class->realize = kgx_window_realize;
-  widget_class->unrealize = kgx_window_unrealize;
 
   window_class->close_request = kgx_window_close_request;
 
@@ -405,6 +344,7 @@ kgx_window_class_init (KgxWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, primary_menu);
 
   gtk_widget_class_bind_template_callback (widget_class, active_changed);
+  gtk_widget_class_bind_template_callback (widget_class, size_changed);
 
   gtk_widget_class_bind_template_callback (widget_class, zoom);
   gtk_widget_class_bind_template_callback (widget_class, status_changed);

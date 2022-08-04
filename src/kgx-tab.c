@@ -47,7 +47,6 @@ struct _KgxTabPrivate {
   double                zoom;
   KgxStatus             status;
   KgxTheme              theme;
-  gboolean              opaque;
   gint64                scrollback_lines;
 
   gboolean              is_active;
@@ -61,13 +60,11 @@ struct _KgxTabPrivate {
   GBinding             *term_font_bind;
   GBinding             *term_zoom_bind;
   GBinding             *term_theme_bind;
-  GBinding             *term_opaque_bind;
   GBinding             *term_scrollback_bind;
 
   GBinding             *pages_font_bind;
   GBinding             *pages_zoom_bind;
   GBinding             *pages_theme_bind;
-  GBinding             *pages_opaque_bind;
   GBinding             *pages_scrollback_bind;
 
   GtkWidget            *stack;
@@ -109,7 +106,6 @@ enum {
   PROP_ZOOM,
   PROP_THEME,
   PROP_IS_ACTIVE,
-  PROP_OPAQUE,
   PROP_CLOSE_ON_QUIT,
   PROP_NEEDS_ATTENTION,
   PROP_SEARCH_MODE_ENABLED,
@@ -355,9 +351,6 @@ kgx_tab_get_property (GObject    *object,
     case PROP_THEME:
       g_value_set_enum (value, priv->theme);
       break;
-    case PROP_OPAQUE:
-      g_value_set_boolean (value, priv->opaque);
-      break;
     case PROP_CLOSE_ON_QUIT:
       g_value_set_boolean (value, priv->close_on_quit);
       break;
@@ -450,9 +443,6 @@ kgx_tab_set_property (GObject      *object,
       break;
     case PROP_THEME:
       priv->theme = g_value_get_enum (value);
-      break;
-    case PROP_OPAQUE:
-      priv->opaque = g_value_get_boolean (value);
       break;
     case PROP_CLOSE_ON_QUIT:
       priv->close_on_quit = g_value_get_boolean (value);
@@ -624,20 +614,6 @@ kgx_tab_class_init (KgxTabClass *klass)
                        KGX_TYPE_THEME,
                        KGX_THEME_NIGHT,
                        G_PARAM_READWRITE);
-
-  /**
-   * KgxTab:opaque:
-   *
-   * Whether to disable transparency
-   *
-   * Bound to #GtkWindow:is-maximized on the #KgxWindow
-   *
-   * Stability: Private
-   */
-  pspecs[PROP_OPAQUE] =
-    g_param_spec_boolean ("opaque", "Opaque", "Terminal opaqueness",
-                          FALSE,
-                          G_PARAM_READWRITE);
 
   pspecs[PROP_CLOSE_ON_QUIT] =
     g_param_spec_boolean ("close-on-quit", "Close on quit",
@@ -836,7 +812,6 @@ kgx_tab_connect_terminal (KgxTab      *self,
   g_clear_object (&priv->term_font_bind);
   g_clear_object (&priv->term_zoom_bind);
   g_clear_object (&priv->term_theme_bind);
-  g_clear_object (&priv->term_opaque_bind);
   g_clear_object (&priv->term_scrollback_bind);
 
   g_set_object (&priv->terminal, term);
@@ -862,9 +837,6 @@ kgx_tab_connect_terminal (KgxTab      *self,
   priv->term_theme_bind = g_object_bind_property (self, "theme",
                                                   term, "theme",
                                                   G_BINDING_SYNC_CREATE);
-  priv->term_opaque_bind = g_object_bind_property (self, "opaque",
-                                                   term, "opaque",
-                                                   G_BINDING_SYNC_CREATE);
   priv->term_scrollback_bind = g_object_bind_property (self, "scrollback-lines",
                                                        term, "scrollback-lines",
                                                        G_BINDING_SYNC_CREATE);
@@ -1209,7 +1181,6 @@ kgx_tab_set_pages (KgxTab   *self,
   g_clear_object (&priv->pages_font_bind);
   g_clear_object (&priv->pages_zoom_bind);
   g_clear_object (&priv->pages_theme_bind);
-  g_clear_object (&priv->pages_opaque_bind);
   g_clear_object (&priv->pages_scrollback_bind);
 
   if (pages == NULL) {
@@ -1225,9 +1196,6 @@ kgx_tab_set_pages (KgxTab   *self,
   priv->pages_theme_bind = g_object_bind_property (pages, "theme",
                                                    self, "theme",
                                                    G_BINDING_SYNC_CREATE);
-  priv->pages_opaque_bind = g_object_bind_property (pages, "opaque",
-                                                    self, "opaque",
-                                                    G_BINDING_SYNC_CREATE);
   priv->pages_scrollback_bind = g_object_bind_property (pages, "scrollback-lines",
                                                         self, "scrollback-lines",
                                                         G_BINDING_SYNC_CREATE);

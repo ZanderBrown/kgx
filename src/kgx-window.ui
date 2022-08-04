@@ -31,6 +31,8 @@
   </menu>
   <template class="KgxWindow" parent="AdwApplicationWindow">
     <signal name="notify::is-active" handler="active_changed" swapped="no"/>
+    <signal name="notify::default-width" handler="size_changed" swapped="no"/>
+    <signal name="notify::default-height" handler="size_changed" swapped="no"/>
     <property name="content">
       <object class="KgxTabSwitcher" id="tab_switcher">
         <signal name="new-tab" handler="new_tab_cb" swapped="no"/>

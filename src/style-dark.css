@@ -3,11 +3,3 @@
 
 @define-color remote_headerbar_bg_color       shade(@purple_5, 0.6);
 @define-color remote_headerbar_backdrop_color shade(@purple_5, 0.45);
-
-.empty-state {
-  background: alpha(@view_bg_color, 0.96);
-}
-
-window.opaque .empty-state {
-  background: @view_bg_color;
-}
