@@ -20,6 +20,13 @@
     </section>
     <section>
       <item>
+        <attribute name="label" translatable="yes">_Fullscreen</attribute>
+        <attribute name="action">win.fullscreen</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
         <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
         <attribute name="action">win.show-help-overlay</attribute>
       </item>
@@ -31,147 +38,170 @@
   </menu>
   <template class="KgxWindow" parent="AdwApplicationWindow">
     <signal name="notify::is-active" handler="active_changed" swapped="no"/>
+    <signal name="notify::fullscreened" handler="fullscreened_changed" swapped="yes"/>
     <property name="content">
       <object class="KgxTabSwitcher" id="tab_switcher">
         <signal name="new-tab" handler="new_tab_cb" swapped="no"/>
         <property name="child">
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkHeaderBar" id="header_bar">
-                <property name="title-widget">
-                  <object class="AdwWindowTitle" id="window_title">
-                    <property name="title" translatable="yes">King’s Cross</property>
-                  </object>
-                </property>
-                <child type="start">
-                  <object class="GtkToggleButton">
-                    <property name="can-focus">0</property>
-                    <property name="receives-default">0</property>
-                    <property name="action-name">win.find</property>
-                    <property name="tooltip-text" translatable="yes">Find in Terminal</property>
-                    <property name="icon-name">edit-find-symbolic</property>
-                  </object>
-                </child>
-                <child type="end">
-                  <object class="GtkMenuButton">
-                    <property name="can-focus">0</property>
-                    <property name="receives-default">1</property>
-                    <property name="tooltip-text" translatable="yes">Menu</property>
-                    <property name="icon-name">open-menu-symbolic</property>
-                    <property name="popover">
-                      <object class="GtkPopoverMenu">
-                        <property name="menu-model">primary_menu</property>
-                        <child type="theme-switcher">
-                          <object class="KgxThemeSwitcher" id="theme_switcher"/>
-                        </child>
-                        <child type="zoom-controls">
-                          <object class="GtkBox">
-                            <property name="orientation">horizontal</property>
-                            <property name="homogeneous">True</property>
-                            <property name="margin-top">3</property>
-                            <property name="margin-bottom">3</property>
-                            <child>
-                              <object class="GtkButton">
-                                <property name="action-name">app.zoom-out</property>
-                                <property name="icon-name">zoom-out-symbolic</property>
-                                <property name="tooltip-text" translatable="yes">Shrink Text</property>
-                                <property name="halign">center</property>
-                                <style>
-                                  <class name="circular"/>
-                                  <class name="flat"/>
-                                </style>
-                              </object>
+          <object class="KgxFullscreenBox" id="fullscreen_box">
+            <property name="fullscreen" bind-source="KgxWindow" bind-property="fullscreened" bind-flags="sync-create"/>
+            <property name="autohide" bind-source="primary_menu_popover" bind-property="visible" bind-flags="invert-boolean"/>
+            <property name="titlebar">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkHeaderBar" id="header_bar">
+                    <property name="show-title-buttons" bind-source="KgxWindow" bind-property="fullscreened" bind-flags="sync-create|invert-boolean"/>
+                    <property name="title-widget">
+                      <object class="AdwWindowTitle" id="window_title">
+                        <property name="title" translatable="yes">King’s Cross</property>
+                      </object>
+                    </property>
+                    <child type="start">
+                      <object class="GtkToggleButton">
+                        <property name="can-focus">0</property>
+                        <property name="receives-default">0</property>
+                        <property name="action-name">win.find</property>
+                        <property name="tooltip-text" translatable="yes">Find in Terminal</property>
+                        <property name="icon-name">edit-find-symbolic</property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkButton">
+                        <property name="visible" bind-source="KgxWindow" bind-property="fullscreened" bind-flags="sync-create"/>
+                        <property name="can-focus">0</property>
+                        <property name="receives-default">0</property>
+                        <property name="icon-name">view-restore-symbolic</property>
+                        <property name="tooltip-text" translatable="yes">Restore</property>
+                        <property name="action-name">win.restore</property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkMenuButton">
+                        <property name="can-focus">0</property>
+                        <property name="receives-default">1</property>
+                        <property name="tooltip-text" translatable="yes">Menu</property>
+                        <property name="icon-name">open-menu-symbolic</property>
+                        <property name="popover">
+                          <object class="GtkPopoverMenu" id="primary_menu_popover">
+                            <property name="menu-model">primary_menu</property>
+                            <child type="theme-switcher">
+                              <object class="KgxThemeSwitcher" id="theme_switcher"/>
                             </child>
-                            <child>
-                              <object class="GtkButton">
-                                <property name="action-name">app.zoom-normal</property>
-                                <property name="tooltip-text" translatable="yes">Reset Size</property>
-                                <property name="halign">center</property>
-                                <style>
-                                  <class name="flat"/>
-                                  <class name="numeric"/>
-                                </style>
+                            <child type="zoom-controls">
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="homogeneous">True</property>
+                                <property name="margin-top">3</property>
+                                <property name="margin-bottom">3</property>
                                 <child>
-                                  <object class="GtkLabel" id="zoom_level">
-                                    <property name="width_chars">5</property>
+                                  <object class="GtkButton">
+                                    <property name="action-name">app.zoom-out</property>
+                                    <property name="icon-name">zoom-out-symbolic</property>
+                                    <property name="tooltip-text" translatable="yes">Shrink Text</property>
+                                    <property name="halign">center</property>
+                                    <style>
+                                      <class name="circular"/>
+                                      <class name="flat"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton">
+                                    <property name="action-name">app.zoom-normal</property>
+                                    <property name="tooltip-text" translatable="yes">Reset Size</property>
+                                    <property name="halign">center</property>
+                                    <style>
+                                      <class name="flat"/>
+                                      <class name="numeric"/>
+                                    </style>
+                                    <child>
+                                      <object class="GtkLabel" id="zoom_level">
+                                        <property name="width_chars">5</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton">
+                                    <property name="action-name">app.zoom-in</property>
+                                    <property name="icon-name">zoom-in-symbolic</property>
+                                    <property name="tooltip-text" translatable="yes">Enlarge Text</property>
+                                    <property name="halign">center</property>
+                                    <style>
+                                      <class name="circular"/>
+                                      <class name="flat"/>
+                                    </style>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                            <child>
-                              <object class="GtkButton">
-                                <property name="action-name">app.zoom-in</property>
-                                <property name="icon-name">zoom-in-symbolic</property>
-                                <property name="tooltip-text" translatable="yes">Enlarge Text</property>
-                                <property name="halign">center</property>
-                                <style>
-                                  <class name="circular"/>
-                                  <class name="flat"/>
-                                </style>
-                              </object>
-                            </child>
                           </object>
-                        </child>
+                        </property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="KgxTabButton" id="tab_button">
+                        <property name="visible" bind-source="tab_switcher" bind-property="narrow" bind-flags="sync-create"/>
+                        <property name="action-name">win.tab-switcher</property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkButton">
+                        <property name="visible" bind-source="tab_switcher" bind-property="narrow" bind-flags="sync-create|invert-boolean"/>
+                        <property name="can-focus">0</property>
+                        <property name="receives-default">0</property>
+                        <property name="action-name">win.new-tab</property>
+                        <property name="tooltip-text" translatable="yes">New Tab</property>
+                        <property name="icon-name">tab-new-symbolic</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkRevealer">
+                    <property name="reveal-child" bind-source="tab_switcher" bind-property="narrow" bind-flags="sync-create|invert-boolean"/>
+                    <property name="child">
+                      <object class="AdwTabBar" id="tab_bar">
+                        <signal name="extra-drag-drop" handler="extra_drag_drop" swapped="no"/>
                       </object>
                     </property>
                   </object>
                 </child>
-                <child type="end">
-                  <object class="KgxTabButton" id="tab_button">
-                    <property name="visible" bind-source="tab_switcher" bind-property="narrow" bind-flags="sync-create"/>
-                    <property name="action-name">win.tab-switcher</property>
+              </object>
+            </property>
+            <property name="content">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="KgxPages" id="pages">
+                    <property name="is-active" bind-source="KgxWindow" bind-property="is-active" bind-flags="sync-create" />
+                    <signal name="zoom" handler="zoom" swapped="no"/>
+                    <signal name="notify::status" handler="status_changed" swapped="yes" />
                   </object>
                 </child>
-                <child type="end">
-                  <object class="GtkButton">
-                    <property name="visible" bind-source="tab_switcher" bind-property="narrow" bind-flags="sync-create|invert-boolean"/>
-                    <property name="can-focus">0</property>
-                    <property name="receives-default">0</property>
-                    <property name="action-name">win.new-tab</property>
-                    <property name="tooltip-text" translatable="yes">New Tab</property>
-                    <property name="icon-name">tab-new-symbolic</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkRevealer">
-                <property name="reveal-child" bind-source="tab_switcher" bind-property="narrow" bind-flags="sync-create|invert-boolean"/>
-                <property name="child">
-                  <object class="AdwTabBar" id="tab_bar">
-                    <signal name="extra-drag-drop" handler="extra_drag_drop" swapped="no"/>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="KgxPages" id="pages">
-                <property name="is-active" bind-source="KgxWindow" bind-property="is-active" bind-flags="sync-create" />
-                <signal name="zoom" handler="zoom" swapped="no"/>
-                <signal name="notify::status" handler="status_changed" swapped="yes" />
-              </object>
-            </child>
-            <child>
-              <object class="GtkRevealer" id="exit_info">
-                <property name="reveal_child">False</property>
-                <property name="child">
-                  <object class="GtkBox">
-                    <property name="can_focus">False</property>
-                    <property name="valign">end</property>
-                    <child>
-                      <object class="GtkLabel" id="exit_message">
-                        <property name="halign">start</property>
-                        <property name="hexpand">True</property>
+                <child>
+                  <object class="GtkRevealer" id="exit_info">
+                    <property name="reveal_child">False</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="can_focus">False</property>
+                        <property name="valign">end</property>
+                        <child>
+                          <object class="GtkLabel" id="exit_message">
+                            <property name="halign">start</property>
+                            <property name="hexpand">True</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="exit-info"/>
+                        </style>
                       </object>
-                    </child>
-                    <style>
-                      <class name="exit-info"/>
-                    </style>
+                    </property>
                   </object>
-                </property>
+                </child>
               </object>
-            </child>
+            </property>
           </object>
         </property>
       </object>

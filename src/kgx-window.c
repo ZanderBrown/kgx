@@ -35,6 +35,7 @@
 
 #include "kgx-window.h"
 #include "kgx-application.h"
+#include "kgx-fullscreen-box.h"
 #include "kgx-process.h"
 #include "kgx-close-dialog.h"
 #include "kgx-pages.h"
@@ -224,6 +225,15 @@ active_changed (GObject *object, GParamSpec *pspec, gpointer data)
 
 
 static void
+fullscreened_changed (KgxWindow *self)
+{
+  gboolean fullscreen = gtk_window_is_fullscreen (GTK_WINDOW (self));
+  gtk_widget_action_set_enabled (GTK_WIDGET (self), "win.fullscreen", !fullscreen);
+  gtk_widget_action_set_enabled (GTK_WIDGET (self), "win.restore", fullscreen);
+}
+
+
+static void
 state_or_size_changed (KgxWindow  *self)
 {
   GdkSurface *surface = gtk_native_get_surface (GTK_NATIVE (self));
@@ -403,13 +413,20 @@ kgx_window_class_init (KgxWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, tab_switcher);
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, pages);
   gtk_widget_class_bind_template_child (widget_class, KgxWindow, primary_menu);
+  gtk_widget_class_bind_template_child (widget_class, KgxWindow, fullscreen_box);
 
   gtk_widget_class_bind_template_callback (widget_class, active_changed);
+  gtk_widget_class_bind_template_callback (widget_class, fullscreened_changed);
 
   gtk_widget_class_bind_template_callback (widget_class, zoom);
   gtk_widget_class_bind_template_callback (widget_class, status_changed);
   gtk_widget_class_bind_template_callback (widget_class, extra_drag_drop);
   gtk_widget_class_bind_template_callback (widget_class, new_tab_cb);
+
+  gtk_widget_class_install_action (widget_class, "win.fullscreen", NULL,
+                                   (GtkWidgetActionActivateFunc) gtk_window_fullscreen);
+  gtk_widget_class_install_action (widget_class, "win.restore", NULL,
+                                   (GtkWidgetActionActivateFunc) gtk_window_unfullscreen);
 }
 
 
@@ -596,6 +613,7 @@ kgx_window_init (KgxWindow *self)
   g_autoptr (GtkWindowGroup) group = NULL;
   g_autoptr (GPropertyAction) pact = NULL;
 
+  g_type_ensure (KGX_TYPE_FULLSCREEN_BOX);
   g_type_ensure (KGX_TYPE_TAB_BUTTON);
   g_type_ensure (KGX_TYPE_TAB_SWITCHER);
   g_type_ensure (KGX_TYPE_THEME_SWITCHER);
@@ -657,6 +675,8 @@ kgx_window_init (KgxWindow *self)
   gtk_widget_insert_action_group (GTK_WIDGET (self),
                                   "tab",
                                   G_ACTION_GROUP (self->tab_actions));
+
+  fullscreened_changed (self);
 }
 
 

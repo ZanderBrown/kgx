@@ -1175,8 +1175,19 @@ kgx_application_add_terminal (KgxApplication *self,
   if (existing_window) {
     window = GTK_WINDOW (existing_window);
   } else {
+    GtkWindow *active_window =
+      gtk_application_get_active_window (GTK_APPLICATION (self));
+    int width = -1;
+    int height = -1;
+
+    if (active_window) {
+      gtk_window_get_default_size (active_window, &width, &height);
+    }
+
     window = g_object_new (KGX_TYPE_WINDOW,
                            "application", self,
+                           "default-width", width,
+                           "default-height", height,
                            NULL);
   }
 

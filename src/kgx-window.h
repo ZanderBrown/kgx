@@ -96,6 +96,7 @@ struct _KgxWindow
   GtkWidget            *tab_switcher;
   GtkWidget            *pages;
   GMenu                *primary_menu;
+  GtkWidget            *fullscreen_box;
 
   int                   current_width;
   int                   current_height;

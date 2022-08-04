@@ -200,3 +200,17 @@ themeswitcher checkbutton.dark radio {
   color: white;
   background-color: #1e1e1e;
 }
+
+fullscreenbox > flap > dimming,
+fullscreenbox > flap > outline,
+fullscreenbox > flap > border {
+  min-height: 0;
+  min-width: 0;
+  background: none;
+}
+
+fullscreenbox > flap > shadow {
+  min-height: 9px;
+  min-width: 9px;
+  background: linear-gradient(to bottom, alpha(black, .1), alpha(black, .0));
+}
