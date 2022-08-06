@@ -41,6 +41,7 @@
 #include "kgx-tab-button.h"
 #include "kgx-tab-switcher.h"
 #include "kgx-theme-switcher.h"
+#include "kgx-watcher.h"
 
 G_DEFINE_TYPE (KgxWindow, kgx_window, ADW_TYPE_APPLICATION_WINDOW)
 
@@ -211,14 +212,10 @@ kgx_window_close_request (GtkWindow *window)
 static void
 active_changed (GObject *object, GParamSpec *pspec, gpointer data)
 {
-  GtkApplication *app;
-
-  app = gtk_window_get_application (GTK_WINDOW (object));
-
   if (gtk_window_is_active (GTK_WINDOW (object))) {
-    kgx_application_push_active (KGX_APPLICATION (app));
+    kgx_watcher_push_active (kgx_watcher_get_default ());
   } else {
-    kgx_application_pop_active (KGX_APPLICATION (app));
+    kgx_watcher_pop_active (kgx_watcher_get_default ());
   }
 }
 

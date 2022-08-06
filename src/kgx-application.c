@@ -40,6 +40,7 @@
 #include "kgx-pages.h"
 #include "kgx-simple-tab.h"
 #include "kgx-resources.h"
+#include "kgx-watcher.h"
 
 #define LOGO_COL_SIZE 28
 #define LOGO_ROW_SIZE 14
@@ -172,8 +173,6 @@ kgx_application_finalize (GObject *object)
   g_clear_object (&self->settings);
   g_clear_object (&self->desktop_interface);
 
-  g_clear_pointer (&self->watching, g_tree_unref);
-  g_clear_pointer (&self->children, g_tree_unref);
   g_clear_pointer (&self->pages, g_tree_unref);
 
   G_OBJECT_CLASS (kgx_application_parent_class)->finalize (object);
@@ -202,115 +201,6 @@ kgx_application_activate (GApplication *app)
   }
 
   gtk_window_present_with_time (window, timestamp);
-}
-
-
-static gboolean
-handle_watch_iter (gpointer pid,
-                   gpointer val,
-                   gpointer user_data)
-{
-  KgxProcess *process = val;
-  KgxApplication *self = user_data;
-  GPid parent = kgx_process_get_parent (process);
-  struct ProcessWatch *watch = NULL;
-
-  watch = g_tree_lookup (self->watching, GINT_TO_POINTER (parent));
-
-  // There are far more processes on the system than there are children
-  // of watches, thus lookup are unlikly
-  if (G_UNLIKELY (watch != NULL)) {
-
-    /* If the page died we stop caring about its processes */
-    if (G_UNLIKELY (watch->page == NULL)) {
-      g_tree_remove (self->watching, GINT_TO_POINTER (parent));
-      g_tree_remove (self->children, pid);
-
-      return FALSE;
-    }
-
-    if (!g_tree_lookup (self->children, pid)) {
-      struct ProcessWatch *child_watch = g_new0 (struct ProcessWatch, 1);
-
-      child_watch->process = g_rc_box_acquire (process);
-      g_set_weak_pointer (&child_watch->page, watch->page);
-
-      g_debug ("Hello %i!", GPOINTER_TO_INT (pid));
-
-      g_tree_insert (self->children, pid, child_watch);
-    }
-
-    kgx_tab_push_child (watch->page, process);
-  }
-
-  return FALSE;
-}
-
-
-struct RemoveDead {
-  GTree     *plist;
-  GPtrArray *dead;
-};
-
-
-static gboolean
-remove_dead (gpointer pid,
-             gpointer val,
-             gpointer user_data)
-{
-  struct RemoveDead *data = user_data;
-  struct ProcessWatch *watch = val;
-
-  if (!g_tree_lookup (data->plist, pid)) {
-    g_debug ("%i marked as dead", GPOINTER_TO_INT (pid));
-
-    kgx_tab_pop_child (watch->page, watch->process);
-
-    g_ptr_array_add (data->dead, pid);
-  }
-
-  return FALSE;
-}
-
-
-static gboolean
-watch (gpointer data)
-{
-  KgxApplication *self = KGX_APPLICATION (data);
-  g_autoptr (GTree) plist = NULL;
-  struct RemoveDead dead;
-
-  plist = kgx_process_get_list ();
-
-  g_tree_foreach (plist, handle_watch_iter, self);
-
-  dead.plist = plist;
-  dead.dead = g_ptr_array_new_full (1, NULL);
-
-  g_tree_foreach (self->children, remove_dead, &dead);
-
-  // We can't modify self->chilren whilst walking it
-  for (int i = 0; i < dead.dead->len; i++) {
-    g_tree_remove (self->children, g_ptr_array_index (dead.dead, i));
-  }
-
-  g_ptr_array_unref (dead.dead);
-
-  return G_SOURCE_CONTINUE;
-}
-
-static inline void
-set_watcher (KgxApplication *self, gboolean focused)
-{
-  g_debug ("updated watcher focused? %s", focused ? "yes" : "no");
-
-  if (self->timeout != 0) {
-    g_source_remove (self->timeout);
-  }
-
-  // Slow down polling when nothing is focused
-  self->timeout = g_timeout_add (focused ? 500 : 2000, watch, self);
-  g_source_set_name_by_id (self->timeout, "[kgx] child watcher");
 }
 
 
@@ -365,8 +255,6 @@ kgx_application_startup (GApplication *app)
 
   settings_action = g_settings_create_action (self->settings, "theme");
   g_action_map_add_action (G_ACTION_MAP (self), G_ACTION (settings_action));
-
-  set_watcher (KGX_APPLICATION (app), TRUE);
 }
 
 
@@ -682,18 +570,6 @@ kgx_application_class_init (KgxApplicationClass *klass)
 
 
 static void
-clear_watch (struct ProcessWatch *watch)
-{
-  g_return_if_fail (watch != NULL);
-
-  g_clear_pointer (&watch->process, kgx_process_unref);
-  g_clear_weak_pointer (&watch->page);
-
-  g_clear_pointer (&watch, g_free);
-}
-
-
-static void
 font_changed (GSettings      *settings,
               const char     *key,
               KgxApplication *self)
@@ -914,67 +790,7 @@ kgx_application_init (KgxApplication *self)
                     G_CALLBACK (font_changed),
                     self);
 
-  self->watching = g_tree_new_full (kgx_pid_cmp,
-                                    NULL,
-                                    NULL,
-                                    (GDestroyNotify) clear_watch);
-  self->children = g_tree_new_full (kgx_pid_cmp,
-                                    NULL,
-                                    NULL,
-                                    (GDestroyNotify) clear_watch);
   self->pages = g_tree_new_full (kgx_pid_cmp, NULL, NULL, NULL);
-
-  self->active = 0;
-  self->timeout = 0;
-}
-
-
-/**
- * kgx_application_add_watch:
- * @self: the #KgxApplication
- * @pid: the shell process to watch
- * @page: the #KgxTab the shell is running in
- *
- * Registers a new shell process with the pid watcher
- */
-void
-kgx_application_add_watch (KgxApplication *self,
-                           GPid            pid,
-                           KgxTab        *page)
-{
-  struct ProcessWatch *watch;
-
-  g_return_if_fail (KGX_IS_APPLICATION (self));
-  g_return_if_fail (KGX_IS_TAB (page));
-
-  watch = g_new0 (struct ProcessWatch, 1);
-  watch->process = kgx_process_new (pid);
-  g_set_weak_pointer (&watch->page, page);
-
-  g_debug ("Started watching %i", pid);
-
-  g_tree_insert (self->watching, GINT_TO_POINTER (pid), watch);
-}
-
-/**
- * kgx_application_remove_watch:
- * @self: the #KgxApplication
- * @pid: the shell process to stop watch watching
- *
- * unregisters the shell with #GPid pid
- */
-void
-kgx_application_remove_watch (KgxApplication *self,
-                              GPid            pid)
-{
-  g_return_if_fail (KGX_IS_APPLICATION (self));
-
-  if (G_LIKELY (g_tree_lookup (self->watching, GINT_TO_POINTER (pid)))) {
-    g_tree_remove (self->watching, GINT_TO_POINTER (pid));
-    g_debug ("Stopped watching %i", pid);
-  } else {
-    g_warning ("Unknown process %i", pid);
-  }
 }
 
 
@@ -998,52 +814,6 @@ kgx_application_get_font (KgxApplication *self)
                                 MONOSPACE_FONT_KEY_NAME);
 
   return pango_font_description_from_string (font);
-}
-
-
-/**
- * kgx_application_push_active:
- * @self: the #KgxApplication
- *
- * Increase the active window count
- */
-void
-kgx_application_push_active (KgxApplication *self)
-{
-  g_return_if_fail (KGX_IS_APPLICATION (self));
-
-  self->active++;
-
-  g_debug ("push_active");
-
-  if (G_LIKELY (self->active > 0)) {
-    set_watcher (self, TRUE);
-  } else {
-    set_watcher (self, FALSE);
-  }
-}
-
-
-/**
- * kgx_application_pop_active:
- * @self: the #KgxApplication
- *
- * Decrease the active window count
- */
-void
-kgx_application_pop_active (KgxApplication *self)
-{
-  g_return_if_fail (KGX_IS_APPLICATION (self));
-
-  self->active--;
-
-  g_debug ("pop_active");
-
-  if (G_LIKELY (self->active < 1)) {
-    set_watcher (self, FALSE);
-  } else {
-    set_watcher (self, TRUE);
-  }
 }
 
 
@@ -1117,7 +887,7 @@ started (GObject      *src,
     return;
   }
 
-  kgx_application_add_watch (KGX_APPLICATION (app), pid, page);
+  kgx_watcher_add (kgx_watcher_get_default (), pid, page);
 }
 
 

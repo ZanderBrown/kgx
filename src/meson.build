@@ -23,6 +23,8 @@ kgx_sources = [
   'kgx-proxy-info.h',
   'kgx-close-dialog.c',
   'kgx-close-dialog.h',
+  'kgx-watcher.c',
+  'kgx-watcher.h',
   'kgx-window.c',
   'kgx-window.h',
   'kgx-process.c',
