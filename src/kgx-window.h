@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 
 #define KGX_WINDOW_STYLE_ROOT "root"
 #define KGX_WINDOW_STYLE_REMOTE "remote"
+#define KGX_WINDOW_STYLE_TOOLBOX "toolbox"
 
 
 #define KGX_TYPE_WINDOW (kgx_window_get_type())

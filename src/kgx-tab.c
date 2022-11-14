@@ -72,6 +72,7 @@ struct _KgxTabPrivate {
   /* Remote/root states */
   GHashTable           *root;
   GHashTable           *remote;
+  GHashTable           *toolbox;
   GHashTable           *children;
 
   char                 *notification_id;
@@ -137,6 +138,7 @@ kgx_tab_dispose (GObject *object)
 
   g_clear_pointer (&priv->root, g_hash_table_unref);
   g_clear_pointer (&priv->remote, g_hash_table_unref);
+  g_clear_pointer (&priv->toolbox, g_hash_table_unref);
   g_clear_pointer (&priv->children, g_hash_table_unref);
 
   g_clear_pointer (&priv->last_search, g_free);
@@ -705,6 +707,7 @@ kgx_tab_init (KgxTab *self)
 
   priv->root = g_hash_table_new (g_direct_hash, g_direct_equal);
   priv->remote = g_hash_table_new (g_direct_hash, g_direct_equal);
+  priv->toolbox = g_hash_table_new (g_direct_hash, g_direct_equal);
   priv->children = g_hash_table_new_full (g_direct_hash,
                                           g_direct_equal,
                                           NULL,
@@ -886,6 +889,11 @@ kgx_tab_push_child (KgxTab     *self,
     new_status |= push_type (priv->remote, pid, NULL, context, KGX_REMOTE);
   }
 
+  if (G_UNLIKELY (g_strcmp0 (program, "toolbox") == 0
+                  && g_strcmp0 (argv[1], "enter") == 0)) {
+    new_status |= push_type (priv->toolbox, pid, NULL, context, KGX_TOOLBOX);
+  }
+
   if (G_UNLIKELY (kgx_process_get_is_root (process))) {
     new_status |= push_type (priv->root, pid, NULL, context, KGX_PRIVILEGED);
   }
@@ -948,6 +956,7 @@ kgx_tab_pop_child (KgxTab     *self,
 
   new_status |= pop_type (priv->remote, pid, context, KGX_REMOTE);
   new_status |= pop_type (priv->root, pid, context, KGX_PRIVILEGED);
+  new_status |= pop_type (priv->toolbox, pid, context, KGX_TOOLBOX);
   pop_type (priv->children, pid, context, KGX_NONE);
 
   if (priv->status != new_status) {

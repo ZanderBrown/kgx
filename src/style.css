@@ -4,6 +4,9 @@
 @define-color remote_headerbar_bg_color       shade(@purple_1, 1.27);
 @define-color remote_headerbar_backdrop_color shade(@purple_1, 1.35);
 
+@define-color toolbox_headerbar_bg_color       shade(@blue_1, 1.10);
+@define-color toolbox_headerbar_backdrop_color shade(@blue_1, 1.25);
+
 .terminal-window {
   background: transparent;
 }
@@ -30,6 +33,18 @@
 .terminal-window.remote:backdrop searchbar > revealer > box,
 .terminal-window.remote:backdrop tabbar > revealer > box {
   background-color: @remote_headerbar_backdrop_color;
+}
+
+.terminal-window.toolbox headerbar,
+.terminal-window.toolbox searchbar > revealer > box,
+.terminal-window.toolbox tabbar > revealer > box {
+  background-color: @toolbox_headerbar_bg_color;
+}
+
+.terminal-window.toolbox:backdrop headerbar,
+.terminal-window.toolbox:backdrop searchbar > revealer > box,
+.terminal-window.toolbox:backdrop tabbar > revealer > box {
+  background-color: @toolbox_headerbar_backdrop_color;
 }
 
 .terminal-window vte-terminal {

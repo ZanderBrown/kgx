@@ -3,3 +3,6 @@
 
 @define-color remote_headerbar_bg_color       shade(@purple_5, 0.6);
 @define-color remote_headerbar_backdrop_color shade(@purple_5, 0.45);
+
+@define-color toolbox_headerbar_bg_color       shade(@blue_5, 0.6);
+@define-color toolbox_headerbar_backdrop_color shade(@blue_5, 0.45);

@@ -16,6 +16,7 @@
     <file preprocess="xml-stripblanks">icons/scalable/status/status-privileged-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/status/status-regular-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/status/status-remote-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/status/status-toolbox-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/status/tab-counter-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/status/tab-overflow-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/status/tab-switcher-collapse-symbolic.svg</file>

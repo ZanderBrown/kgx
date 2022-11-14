@@ -413,6 +413,8 @@ status_to_icon (GBinding     *binding,
     g_value_take_object (to_value, g_themed_icon_new ("status-remote-symbolic"));
   else if (status & KGX_PRIVILEGED)
     g_value_take_object (to_value, g_themed_icon_new ("status-privileged-symbolic"));
+  else if (status & KGX_TOOLBOX)
+    g_value_take_object (to_value, g_themed_icon_new ("status-toolbox-symbolic"));
   else
     g_value_set_object (to_value, NULL);
 

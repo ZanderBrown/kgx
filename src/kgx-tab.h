@@ -42,6 +42,7 @@ typedef enum /*< flags,prefix=KGX >*/ {
   KGX_NONE = 0,              /*< nick=none >*/
   KGX_REMOTE = (1 << 0),     /*< nick=remote >*/
   KGX_PRIVILEGED = (1 << 1), /*< nick=privileged >*/
+  KGX_TOOLBOX = (1 << 2),    /*< nick=toolbox >*/
 } KgxStatus;
 
 
