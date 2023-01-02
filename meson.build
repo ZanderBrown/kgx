@@ -21,6 +21,12 @@ project('gnome-console', 'c',
                              'adwaita:tests=false',
                              # libsass may be pulled in via adwaita
                              'libsass:werror=false',
+                             'gtk4:media-gstreamer=disabled',
+                             'gtk4:print-cups=disabled',
+                             'gtk4:introspection=disabled',
+                             'gtk4:demos=false',
+                             'gtk4:build-examples=false',
+                             'gtk4:build-tests=false',
                            ],
 )
 
@@ -70,8 +76,8 @@ config_h = vcs_tag( input: config_h_in,
                   command: ['git', 'rev-parse', '--short', 'HEAD'],
                  fallback: 'Devel')
 
-gtk_ver = 'GDK_VERSION_4_6'
-glib_ver = 'GLIB_VERSION_2_72'
+gtk_ver = 'GDK_VERSION_4_8'
+glib_ver = 'GLIB_VERSION_2_74'
 
 kgx_cargs = [
   '-DG_LOG_DOMAIN="@0@"'.format(log_domain),
@@ -120,11 +126,11 @@ endif
 
 add_project_arguments(global_cargs, language: 'c')
 
-gio_dep = dependency('gio-2.0', version: '>= 2.72')
-gio_unix_dep = dependency('gio-unix-2.0', version: '>= 2.72')
-gtk_dep = dependency('gtk4', version: '>= 4.6')
 adw_dep = dependency('libadwaita-1', version: '>= 1.2.beta')
-vte_dep = dependency('vte-2.91-gtk4', version: '>= 0.69.91')
+gtk_dep = dependency('gtk4', version: '>= 4.8')
+vte_dep = dependency('vte-2.91-gtk4', version: '>= 0.70.2')
+gio_dep = dependency('gio-2.0', version: '>= 2.74')
+gio_unix_dep = dependency('gio-unix-2.0', version: '>= 2.74')
 gtop_dep = dependency('libgtop-2.0')
 pcre_dep = dependency('libpcre2-8', version: '>= 10.32')
 schemas_dep = dependency('gsettings-desktop-schemas')
